@@ -10,8 +10,9 @@ npm-*
 /coverage
 
 # Build
-/build1
-/dist1
+/build
+/dist
+/docs-original
 /.opt-in
 
 # Generated translation files
