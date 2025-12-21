@@ -7,6 +7,7 @@ import VM from 'scratch-vm';
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import backdropTags from '../lib/libraries/backdrop-tags';
 import LibraryComponent from '../components/library/library.jsx';
+import analytics from '../lib/analytics';
 
 const messages = defineMessages({
     libraryTitle: {
@@ -25,6 +26,23 @@ class BackdropLibrary extends React.Component {
         ]);
     }
     handleItemSelect (item) {
+        const backdropName = item.name || 'Unknown';
+        
+        // Console log
+        console.log('Backdrop added:', {
+            name: backdropName,
+            source: 'library',
+            isStage: true,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'backdrop',
+            action: 'add',
+            label: `${backdropName} (library)`
+        });
+        
         const vmBackdrop = {
             name: item.name,
             rotationCenterX: item.rotationCenterX,

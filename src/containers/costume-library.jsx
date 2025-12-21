@@ -7,6 +7,7 @@ import VM from 'scratch-vm';
 import costumeLibraryContent from '../lib/libraries/costumes.json';
 import spriteTags from '../lib/libraries/sprite-tags';
 import LibraryComponent from '../components/library/library.jsx';
+import analytics from '../lib/analytics';
 
 const messages = defineMessages({
     libraryTitle: {
@@ -25,6 +26,26 @@ class CostumeLibrary extends React.PureComponent {
         ]);
     }
     handleItemSelected (item) {
+        const target = this.props.vm.editingTarget;
+        const isStage = target.isStage;
+        const itemType = isStage ? 'backdrop' : 'costume';
+        const itemName = item.name || 'Unknown';
+        
+        // Console log
+        console.log(`${isStage ? 'Backdrop' : 'Costume'} added:`, {
+            name: itemName,
+            source: 'library',
+            isStage: isStage,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: itemType,
+            action: 'add',
+            label: `${itemName} (library)`
+        });
+        
         const vmCostume = {
             name: item.name,
             rotationCenterX: item.rotationCenterX,

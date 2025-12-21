@@ -23,6 +23,7 @@ import {highlightTarget} from '../reducers/targets';
 import {fetchSprite, fetchCode} from '../lib/backpack-api';
 import randomizeSpritePosition from '../lib/randomize-sprite-position';
 import downloadBlob from '../lib/download-blob';
+import analytics from '../lib/analytics';
 
 class TargetPane extends React.Component {
     constructor (props) {
@@ -78,6 +79,22 @@ class TargetPane extends React.Component {
         this.props.vm.postSpriteInfo({y});
     }
     handleDeleteSprite (id) {
+        const spriteName = this.props.vm.runtime.getTargetById(id).getName();
+        
+        // Console log
+        console.log('Sprite deleted:', {
+            spriteId: id,
+            spriteName: spriteName,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'sprite',
+            action: 'delete',
+            label: spriteName
+        });
+        
         const restoreSprite = this.props.vm.deleteSprite(id);
         const restoreFun = () => restoreSprite().then(this.handleActivateBlocksTab);
 
@@ -88,6 +105,22 @@ class TargetPane extends React.Component {
 
     }
     handleDuplicateSprite (id) {
+        const spriteName = this.props.vm.runtime.getTargetById(id).getName();
+        
+        // Console log
+        console.log('Sprite duplicated:', {
+            spriteId: id,
+            spriteName: spriteName,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'sprite',
+            action: 'duplicate',
+            label: spriteName
+        });
+        
         this.props.vm.duplicateSprite(id);
     }
     handleExportSprite (id) {
@@ -110,6 +143,22 @@ class TargetPane extends React.Component {
             (sprite.tags.indexOf('letters') === -1) && (sprite.tags.indexOf('numbers') === -1)
         );
         const item = surpriseSprites[Math.floor(Math.random() * surpriseSprites.length)];
+        const spriteName = item.name || 'Unknown';
+        
+        // Console log
+        console.log('Sprite added:', {
+            spriteName: spriteName,
+            source: 'surprise',
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'sprite',
+            action: 'add',
+            label: `${spriteName} (surprise)`
+        });
+        
         randomizeSpritePosition(item);
         this.props.vm.addSprite(JSON.stringify(item))
             .then(this.handleActivateBlocksTab);
@@ -121,6 +170,22 @@ class TargetPane extends React.Component {
             formatMessage(sharedMessages.pop),
             formatMessage(sharedMessages.costume, {index: 1})
         );
+        const spriteName = emptyItem.name || 'Sprite1';
+        
+        // Console log
+        console.log('Sprite added:', {
+            spriteName: spriteName,
+            source: 'paint',
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'sprite',
+            action: 'add',
+            label: `${spriteName} (paint)`
+        });
+        
         this.props.vm.addSprite(JSON.stringify(emptyItem)).then(() => {
             setTimeout(() => { // Wait for targets update to propagate before tab switching
                 this.props.onActivateTab(COSTUMES_TAB_INDEX);
@@ -131,6 +196,28 @@ class TargetPane extends React.Component {
         this.props.onActivateTab(BLOCKS_TAB_INDEX);
     }
     handleNewSprite (spriteJSONString) {
+        // Parse sprite data to get name
+        let spriteName = 'Unknown';
+        try {
+            const spriteData = JSON.parse(spriteJSONString);
+            spriteName = spriteData.name || 'Unknown';
+        } catch (e) {
+            // If parsing fails, use default name
+        }
+        
+        // Console log
+        console.log('Sprite added:', {
+            spriteName: spriteName,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'sprite',
+            action: 'add',
+            label: spriteName
+        });
+        
         return this.props.vm.addSprite(spriteJSONString)
             .then(this.handleActivateBlocksTab);
     }
