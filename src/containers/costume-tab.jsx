@@ -36,6 +36,7 @@ import searchIcon from '../components/action-menu/icon--search.svg';
 
 import costumeLibraryContent from '../lib/libraries/costumes.json';
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
+import analytics from '../lib/analytics';
 
 let messages = defineMessages({
     addLibraryBackdropMsg: {
@@ -134,6 +135,26 @@ class CostumeTab extends React.Component {
         this.setState({selectedCostumeIndex: costumeIndex});
     }
     handleDeleteCostume (costumeIndex) {
+        const target = this.props.vm.editingTarget;
+        const isStage = target.isStage;
+        const costumeName = target.sprite.costumes[costumeIndex].name;
+        const itemType = isStage ? 'backdrop' : 'costume';
+        
+        // Console log
+        console.log(`${isStage ? 'Backdrop' : 'Costume'} deleted:`, {
+            name: costumeName,
+            index: costumeIndex,
+            isStage: isStage,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: itemType,
+            action: 'delete',
+            label: costumeName
+        });
+        
         const restoreCostumeFun = this.props.vm.deleteCostume(costumeIndex);
         this.props.dispatchUpdateRestore({
             restoreFun: restoreCostumeFun,
@@ -141,6 +162,26 @@ class CostumeTab extends React.Component {
         });
     }
     handleDuplicateCostume (costumeIndex) {
+        const target = this.props.vm.editingTarget;
+        const isStage = target.isStage;
+        const costumeName = target.sprite.costumes[costumeIndex].name;
+        const itemType = isStage ? 'backdrop' : 'costume';
+        
+        // Console log
+        console.log(`${isStage ? 'Backdrop' : 'Costume'} duplicated:`, {
+            name: costumeName,
+            index: costumeIndex,
+            isStage: isStage,
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: itemType,
+            action: 'duplicate',
+            label: costumeName
+        });
+        
         this.props.vm.duplicateCostume(costumeIndex);
     }
     handleExportCostume (costumeIndex) {
@@ -194,12 +235,32 @@ class CostumeTab extends React.Component {
     handleCostumeUpload (e) {
         const storage = this.props.vm.runtime.storage;
         const targetId = this.props.vm.editingTarget.id;
+        const target = this.props.vm.editingTarget;
+        const isStage = target.isStage;
+        const itemType = isStage ? 'backdrop' : 'costume';
+        
         this.props.onShowImporting();
         handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
             costumeUpload(buffer, fileType, storage, vmCostumes => {
                 vmCostumes.forEach((costume, i) => {
                     costume.name = `${fileName}${i ? i + 1 : ''}`;
+                    
+                    // Console log for each uploaded costume
+                    console.log(`${isStage ? 'Backdrop' : 'Costume'} added:`, {
+                        name: costume.name,
+                        source: 'upload',
+                        isStage: isStage,
+                        timestamp: new Date().toISOString()
+                    });
+                    
+                    // Google Analytics event
+                    analytics.event({
+                        category: itemType,
+                        action: 'add',
+                        label: `${costume.name} (upload)`
+                    });
                 });
+                
                 this.handleNewCostume(vmCostumes, false, targetId).then(() => {
                     if (fileIndex === fileCount - 1) {
                         this.props.onCloseImporting();
@@ -264,11 +325,11 @@ class CostumeTab extends React.Component {
         const addLibraryFunc = isStage ? onNewLibraryBackdropClick : onNewLibraryCostumeClick;
         const addLibraryIcon = isStage ? addLibraryBackdropIcon : addLibraryCostumeIcon;
 
-        const costumeData = target.costumes ? target.costumes.map(costume => ({
+        const costumeData = target.costumes ? target.costumes.map((costume, index) => ({
             name: costume.name,
             asset: costume.asset,
             details: costume.size ? this.formatCostumeDetails(costume.size, costume.bitmapResolution) : null,
-            dragPayload: costume
+            dragPayload: index
         })) : [];
         return (
             <AssetPanel

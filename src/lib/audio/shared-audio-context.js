@@ -2,6 +2,7 @@ import StartAudioContext from 'startaudiocontext';
 import bowser from 'bowser';
 
 let AUDIO_CONTEXT;
+let audioContextInitialized = false;
 
 if (!bowser.msie) {
     /**
@@ -12,12 +13,15 @@ if (!bowser.msie) {
             'mousedown' :
             'touchstart';
     const initAudioContext = () => {
+        if (audioContextInitialized) return; // Prevent multiple initializations
+        audioContextInitialized = true;
+        
         document.removeEventListener(event, initAudioContext);
         AUDIO_CONTEXT = new (window.AudioContext ||
             window.webkitAudioContext)();
         StartAudioContext(AUDIO_CONTEXT);
     };
-    document.addEventListener(event, initAudioContext);
+    document.addEventListener(event, initAudioContext, {once: true});
 }
 
 /**

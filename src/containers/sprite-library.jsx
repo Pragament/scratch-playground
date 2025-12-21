@@ -9,6 +9,7 @@ import randomizeSpritePosition from '../lib/randomize-sprite-position';
 import spriteTags from '../lib/libraries/sprite-tags';
 
 import LibraryComponent from '../components/library/library.jsx';
+import analytics from '../lib/analytics';
 
 const messages = defineMessages({
     libraryTitle: {
@@ -26,6 +27,22 @@ class SpriteLibrary extends React.PureComponent {
         ]);
     }
     handleItemSelect (item) {
+        const spriteName = item.name || 'Unknown';
+        
+        // Console log
+        console.log('Sprite added:', {
+            spriteName: spriteName,
+            source: 'library',
+            timestamp: new Date().toISOString()
+        });
+        
+        // Google Analytics event
+        analytics.event({
+            category: 'sprite',
+            action: 'add',
+            label: `${spriteName} (library)`
+        });
+        
         // Randomize position of library sprite
         randomizeSpritePosition(item);
         this.props.vm.addSprite(JSON.stringify(item)).then(() => {
