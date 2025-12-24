@@ -37,6 +37,14 @@ import searchIcon from '../components/action-menu/icon--search.svg';
 import costumeLibraryContent from '../lib/libraries/costumes.json';
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import analytics from '../lib/analytics';
+import {
+    trackCostumeAdd,
+    trackCostumeDuplicate,
+    trackCostumeDelete,
+    trackBackdropAdd,
+    trackBackdropDuplicate,
+    trackBackdropDelete
+} from '../lib/video/event-tracker';
 
 let messages = defineMessages({
     addLibraryBackdropMsg: {
@@ -155,6 +163,13 @@ class CostumeTab extends React.Component {
             label: costumeName
         });
         
+        // Video recording event
+        if (isStage) {
+            trackBackdropDelete(costumeName);
+        } else {
+            trackCostumeDelete(costumeName);
+        }
+        
         const restoreCostumeFun = this.props.vm.deleteCostume(costumeIndex);
         this.props.dispatchUpdateRestore({
             restoreFun: restoreCostumeFun,
@@ -181,6 +196,13 @@ class CostumeTab extends React.Component {
             action: 'duplicate',
             label: costumeName
         });
+        
+        // Video recording event
+        if (isStage) {
+            trackBackdropDuplicate(costumeName);
+        } else {
+            trackCostumeDuplicate(costumeName);
+        }
         
         this.props.vm.duplicateCostume(costumeIndex);
     }
@@ -259,6 +281,13 @@ class CostumeTab extends React.Component {
                         action: 'add',
                         label: `${costume.name} (upload)`
                     });
+                    
+                    // Video recording event
+                    if (isStage) {
+                        trackBackdropAdd('upload');
+                    } else {
+                        trackCostumeAdd('upload');
+                    }
                 });
                 
                 this.handleNewCostume(vmCostumes, false, targetId).then(() => {

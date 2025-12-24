@@ -1,0 +1,145 @@
+.videoRecordingControls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.button:active {
+    transform: translateY(0);
+}
+
+.recordButton {
+    background-color: #ff4444;
+    color: white;
+}
+
+.recordButton:hover {
+    background-color: #ff2222;
+}
+
+.stopButton {
+    background-color: #666;
+    color: white;
+}
+
+.stopButton:hover {
+    background-color: #555;
+}
+
+.pauseButton {
+    background-color: #ff9800;
+    color: white;
+}
+
+.pauseButton:hover {
+    background-color: #ff8700;
+}
+
+.resumeButton {
+    background-color: #4caf50;
+    color: white;
+}
+
+.resumeButton:hover {
+    background-color: #45a049;
+}
+
+.muteButton,
+.cameraButton,
+.subtitlesButton {
+    min-width: 44px;
+    padding: 8px;
+    background-color: #f0f0f0;
+}
+
+.muteButton.active,
+.cameraButton.active,
+.subtitlesButton.active {
+    background-color: #4285f4;
+    color: white;
+}
+
+.muteButton:hover,
+.cameraButton:hover,
+.subtitlesButton:hover {
+    background-color: #e0e0e0;
+}
+
+.muteButton.active:hover,
+.cameraButton.active:hover,
+.subtitlesButton.active:hover {
+    background-color: #3367d6;
+}
+
+.icon {
+    font-size: 18px;
+}
+
+.recordIcon,
+.stopIcon,
+.pauseIcon,
+.playIcon {
+    font-size: 16px;
+}
+
+.duration {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+    color: #333;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    min-width: 80px;
+    justify-content: center;
+}
+
+.pausedIndicator {
+    font-size: 12px;
+    color: #ff9800;
+    margin-left: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .videoRecordingControls {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+
+    .duration {
+        font-size: 14px;
+        padding: 6px 10px;
+    }
+}

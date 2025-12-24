@@ -24,6 +24,11 @@ import {fetchSprite, fetchCode} from '../lib/backpack-api';
 import randomizeSpritePosition from '../lib/randomize-sprite-position';
 import downloadBlob from '../lib/download-blob';
 import analytics from '../lib/analytics';
+import {
+    trackSpriteAdd,
+    trackSpriteDuplicate,
+    trackSpriteDelete
+} from '../lib/video/event-tracker';
 
 class TargetPane extends React.Component {
     constructor (props) {
@@ -95,6 +100,9 @@ class TargetPane extends React.Component {
             label: spriteName
         });
         
+        // Video recording event
+        trackSpriteDelete(spriteName);
+        
         const restoreSprite = this.props.vm.deleteSprite(id);
         const restoreFun = () => restoreSprite().then(this.handleActivateBlocksTab);
 
@@ -120,6 +128,9 @@ class TargetPane extends React.Component {
             action: 'duplicate',
             label: spriteName
         });
+        
+        // Video recording event
+        trackSpriteDuplicate(spriteName);
         
         this.props.vm.duplicateSprite(id);
     }
@@ -159,6 +170,9 @@ class TargetPane extends React.Component {
             label: `${spriteName} (surprise)`
         });
         
+        // Video recording event
+        trackSpriteAdd('surprise');
+        
         randomizeSpritePosition(item);
         this.props.vm.addSprite(JSON.stringify(item))
             .then(this.handleActivateBlocksTab);
@@ -185,6 +199,9 @@ class TargetPane extends React.Component {
             action: 'add',
             label: `${spriteName} (paint)`
         });
+        
+        // Video recording event
+        trackSpriteAdd('paint');
         
         this.props.vm.addSprite(JSON.stringify(emptyItem)).then(() => {
             setTimeout(() => { // Wait for targets update to propagate before tab switching
@@ -218,6 +235,9 @@ class TargetPane extends React.Component {
             label: spriteName
         });
         
+        // Video recording event
+        trackSpriteAdd('library');
+        
         return this.props.vm.addSprite(spriteJSONString)
             .then(this.handleActivateBlocksTab);
     }
@@ -229,6 +249,9 @@ class TargetPane extends React.Component {
         this.props.onShowImporting();
         handleFileUpload(e.target, (buffer, fileType, fileName, fileIndex, fileCount) => {
             spriteUpload(buffer, fileType, fileName, storage, newSprite => {
+                // Video recording event
+                trackSpriteAdd('upload');
+                
                 this.handleNewSprite(newSprite)
                     .then(() => {
                         if (fileIndex === fileCount - 1) {

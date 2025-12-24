@@ -10,6 +10,7 @@ import spriteTags from '../lib/libraries/sprite-tags';
 
 import LibraryComponent from '../components/library/library.jsx';
 import analytics from '../lib/analytics';
+import {trackSpriteAdd} from '../lib/video/event-tracker';
 
 const messages = defineMessages({
     libraryTitle: {
@@ -42,6 +43,9 @@ class SpriteLibrary extends React.PureComponent {
             action: 'add',
             label: `${spriteName} (library)`
         });
+        
+        // Video recording event
+        trackSpriteAdd('library');
         
         // Randomize position of library sprite
         randomizeSpritePosition(item);

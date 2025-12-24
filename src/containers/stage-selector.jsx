@@ -21,6 +21,7 @@ import StageSelectorComponent from '../components/stage-selector/stage-selector.
 
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import {handleFileUpload, costumeUpload} from '../lib/file-uploader.js';
+import {trackBackdropAdd} from '../lib/video/event-tracker';
 
 const dragTypes = [
     DragConstants.COSTUME,
@@ -109,6 +110,9 @@ class StageSelector extends React.Component {
                 this.props.vm.setEditingTarget(this.props.id);
                 vmCostumes.forEach((costume, i) => {
                     costume.name = `${fileName}${i ? i + 1 : ''}`;
+                    
+                    // Video recording event
+                    trackBackdropAdd('upload');
                 });
                 this.handleNewBackdrop(vmCostumes).then(() => {
                     if (fileIndex === fileCount - 1) {

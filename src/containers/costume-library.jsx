@@ -8,6 +8,7 @@ import costumeLibraryContent from '../lib/libraries/costumes.json';
 import spriteTags from '../lib/libraries/sprite-tags';
 import LibraryComponent from '../components/library/library.jsx';
 import analytics from '../lib/analytics';
+import {trackCostumeAdd, trackBackdropAdd} from '../lib/video/event-tracker';
 
 const messages = defineMessages({
     libraryTitle: {
@@ -45,6 +46,13 @@ class CostumeLibrary extends React.PureComponent {
             action: 'add',
             label: `${itemName} (library)`
         });
+        
+        // Video recording event
+        if (isStage) {
+            trackBackdropAdd('library');
+        } else {
+            trackCostumeAdd('library');
+        }
         
         const vmCostume = {
             name: item.name,

@@ -8,6 +8,7 @@ import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import backdropTags from '../lib/libraries/backdrop-tags';
 import LibraryComponent from '../components/library/library.jsx';
 import analytics from '../lib/analytics';
+import {trackBackdropAdd} from '../lib/video/event-tracker';
 
 const messages = defineMessages({
     libraryTitle: {
@@ -42,6 +43,9 @@ class BackdropLibrary extends React.Component {
             action: 'add',
             label: `${backdropName} (library)`
         });
+        
+        // Video recording event
+        trackBackdropAdd('library');
         
         const vmBackdrop = {
             name: item.name,
